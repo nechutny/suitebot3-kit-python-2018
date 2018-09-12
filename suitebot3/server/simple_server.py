@@ -21,7 +21,7 @@ class SimpleServer(object):
         try:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             sock.bind(('', self._port))
-            sock.listen()
+            sock.listen(200)
             while not self._should_shut_down:
                 connection, address = sock.accept()
                 try:

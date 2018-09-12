@@ -9,6 +9,7 @@ from suitebot3.server.simple_server import SimpleServer, SHUTDOWN_REQUEST
 
 PORT = 4444
 
+
 class TestSimpleServer(unittest.TestCase):
 
     def setUp(self):
@@ -33,20 +34,23 @@ class TestSimpleServer(unittest.TestCase):
 
         self.assertFalse(self.server_thread.is_alive())
 
+
 def send_request(request: str):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect(('localhost', PORT))
 
-    bytes = bytearray(request, 'UTF-8')
-    totalsent = 0
-    while totalsent < len(bytes):
-        sent = sock.send(bytes[totalsent:])
+    request_bytes = bytearray(request, 'UTF-8')
+    total_sent = 0
+    while total_sent < len(request_bytes):
+        sent = sock.send(request_bytes[total_sent:])
         if sent == 0:
             raise RuntimeError("socket connection broken")
-        totalsent = totalsent + sent
+        total_sent = total_sent + sent
 
     sock.close()
 
+
 class ToLowerCaseRequestHandler(SimpleRequestHandler):
     def process_request(self, request: str) -> str:
-        return str.lower(str)
+        return str.lower(request)
+

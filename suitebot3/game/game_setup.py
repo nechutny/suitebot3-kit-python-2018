@@ -1,4 +1,4 @@
-from typing import Iterable, Any
+from typing import Iterable, Any, List
 
 from suitebot3.game.game_plan import GamePlan
 
@@ -7,9 +7,11 @@ class GameSetup:
                  ai_player_id: int,
                  player_ids: Iterable[int],
                  game_plan: GamePlan):
-        self.ai_player_id = ai_player_id
-        self.player_ids = tuple(player_ids)
-        self.game_plan = game_plan
+        self.ai_player_id = ai_player_id                                       # type: int
+        self.player_ids = tuple([int(player_id) for player_id in player_ids])  # type: List[int]
+        self.game_plan = game_plan                                             # type: GamePlan
 
-def game_state_2_game_setup(dto: Any) -> GameSetup:
+
+def dto_2_game_setup(dto: Any) -> GameSetup:
     return GameSetup(dto['aiPlayerId'], [], None)
+

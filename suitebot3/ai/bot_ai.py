@@ -1,15 +1,15 @@
 from abc import ABCMeta, abstractmethod
 
+from suitebot3.game.action import Action
 from suitebot3.game.game_state import GameState
-from suitebot3.game.moves import Moves
 
 
 class BotAi:
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def make_moves(self, game_state: GameState) -> Moves:
+    def make_move(self, game_state: GameState) -> Action:
         """
-        :param gameState - the current state of the game
+        :param game_state: the current state of the game
         :return the moves to play
         """
