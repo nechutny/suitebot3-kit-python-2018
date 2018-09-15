@@ -88,28 +88,60 @@ class SampleBotAi(BotAi):
             else:
                 return Actions.RIGHT
 
+    def getOccupyPercent(self, game_state: GameState):
+        free = 0
+        points = 0
+        fields = 0
+        point = NamedTuple('Point', [('x', int), ('y', int)])
+        for y in range(0, game_state.get_game_plan().height):
+            point.y = y
+            for x in range(0, game_state.get_game_plan().width):
+                point.x = x
+                field = game_state.get_field(point)
+                fields = fields + 1
+                if field.get_resource_count() == 0:
+                    free = free + 1
+                else:
+                    points = points + 1
+
+        return points/fields
+
+    def harvesAI(self, game_state):
+        if self.gameRound % 5 == 0:
+            self.gameRound = self.gameRound + 1
+            return Actions.PLANT_BOMB
+        elif self.gameRound % 5 == 1:
+            self.direction = self.getBestDirection(game_state)
+            self.gameRound = self.gameRound + 1
+            return self.translateDirection(self.direction, 1)
+        elif self.gameRound % 5 == 2:
+            self.gameRound = self.gameRound + 1
+            return self.translateDirection(self.direction, 1)
+        elif self.gameRound % 5 == 3:
+            self.gameRound = self.gameRound + 1
+            return self.translateDirection(self.direction, 2)
+        elif self.gameRound % 5 == 4:
+            self.gameRound = self.gameRound + 1
+            return self.translateDirection(self.direction, 2)
+
+    def suicideAI(self, game_state: GameState):
+        if self.gameRound%3 == 0:
+            self.gameRound = self.gameRound + 1
+            return Actions.PLANT_BOMB
+        else:
+            self.gameRound = self.gameRound + 1
+            return random.choice([Actions.UP, Actions.DOWN, Actions.LEFT, Actions.RIGHT])
+
+
     def make_move(self, game_state: GameState) -> Action:
         self.agent = game_state.get_agent_of_player(self.my_id)
         try:
 
-            if self.agent is not None:
-                # return random.choice(self.ACTIONS)
-                if self.gameRound % 5 == 0:
-                    self.gameRound = self.gameRound + 1
-                    return Actions.PLANT_BOMB
-                elif self.gameRound % 5 == 1:
-                    self.direction = self.getBestDirection(game_state)
-                    self.gameRound = self.gameRound + 1
-                    return self.translateDirection(self.direction, 1)
-                elif self.gameRound % 5 == 2:
-                    self.gameRound = self.gameRound + 1
-                    return self.translateDirection(self.direction, 1)
-                elif self.gameRound % 5 == 3:
-                    self.gameRound = self.gameRound + 1
-                    return self.translateDirection(self.direction, 2)
-                elif self.gameRound % 5 == 4:
-                    self.gameRound = self.gameRound + 1
-                    return self.translateDirection(self.direction, 2)
+            if self.getOccupyPercent(game_state) > 0.05:
+                return self.harvesAI(game_state)
+            else:
+                return self.suicideAI(game_state)
+
 
         except Exception as e:
             print(e.__doc__)
