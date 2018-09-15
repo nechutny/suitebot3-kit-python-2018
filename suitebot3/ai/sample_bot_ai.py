@@ -20,6 +20,19 @@ class SampleBotAi(BotAi):
         self.gameRound = 0
         self.direction = 1
 
+    def normalizeCoord(self, point):
+        if point.x < 0:
+            point.x = self.gameState.get_game_plan().width - point.x
+        else:
+            point.x =  point.x % self.gameState.get_game_plan().width
+
+        if point.y < 0:
+            point.y = self.gameState.get_game_plan().height - point.y
+        else:
+            point.y = point.y % self.gameState.get_game_plan().height
+
+        return point
+
     def getBestDirection(self, game_state):
         x = [1, -1]
         y = [-1, 1]
@@ -34,7 +47,7 @@ class SampleBotAi(BotAi):
         points = self.calculatePoints(game_state, myPosition.x + 2, myPosition.y - 2)
         point.x = myPosition.x + 1
         point.y = myPosition.y - 1
-        points = points - game_state.get_field(point).get_resource_count()
+        points = points - game_state.get_field(self.normalizeCoord(point)).get_resource_count()
         if points > bestPoints:
             bestDirection = 1
             bestPoints = points
@@ -42,7 +55,7 @@ class SampleBotAi(BotAi):
         points = self.calculatePoints(game_state, myPosition.x - 2, myPosition.y - 2)
         point.x = myPosition.x - 1
         point.y = myPosition.y - 1
-        points = points - game_state.get_field(point).get_resource_count()
+        points = points - game_state.get_field(self.normalizeCoord(point)).get_resource_count()
         if points > bestPoints:
             bestDirection = 2
             bestPoints = points
@@ -50,7 +63,7 @@ class SampleBotAi(BotAi):
         points = self.calculatePoints(game_state, myPosition.x - 2, myPosition.y + 2)
         point.x = myPosition.x - 1
         point.y = myPosition.y + 1
-        points = points - game_state.get_field(point).get_resource_count()
+        points = points - game_state.get_field(self.normalizeCoord(point)).get_resource_count()
         if points > bestPoints:
             bestDirection = 3
             bestPoints = points
@@ -58,7 +71,7 @@ class SampleBotAi(BotAi):
         points = self.calculatePoints(game_state, myPosition.x + 2, myPosition.y + 2)
         point.x = myPosition.x + 1
         point.y = myPosition.y + 1
-        points = points - game_state.get_field(point).get_resource_count()
+        points = points - game_state.get_field(self.normalizeCoord(point)).get_resource_count()
         if points > bestPoints:
             bestDirection = 4
             bestPoints = points
@@ -72,7 +85,7 @@ class SampleBotAi(BotAi):
                 point = NamedTuple('Point', [('x', int), ('y', int)])
                 point.x = x + i
                 point.y = y + j
-                pointsum = pointsum + game_state.get_field(point).get_resource_count()
+                pointsum = pointsum + game_state.get_field(self.normalizeCoord(point)).get_resource_count()
 
         return pointsum
 
@@ -97,7 +110,7 @@ class SampleBotAi(BotAi):
             point.y = y
             for x in range(0, game_state.get_game_plan().width):
                 point.x = x
-                field = game_state.get_field(point)
+                field = game_state.get_field(self.normalizeCoord(point))
                 fields = fields + 1
                 if field.get_resource_count() == 0:
                     free = free + 1
@@ -142,12 +155,12 @@ class SampleBotAi(BotAi):
         points_right = self.calculatePoints(game_state, myPosition.x + 2, myPosition.y)
         point.x = myPosition.x + 1
         point.y = myPosition.y + (+1 if self.translateDirection(self.direction, 1) == Actions.UP else -1)
-        points_right = points_right - game_state.get_field(point).get_resource_count()
+        points_right = points_right - game_state.get_field(self.normalizeCoord(point)).get_resource_count()
 
         points_left = self.calculatePoints(game_state, myPosition.x - 2, myPosition.y)
         point.x = myPosition.x - 1
         point.y = myPosition.y + (+1 if self.translateDirection(self.direction, 1) == Actions.UP else -1)
-        points_left = points_left - game_state.get_field(point).get_resource_count()
+        points_left = points_left - game_state.get_field(self.normalizeCoord(point)).get_resource_count()
 
         if points_left < points_right:
             self.direction = 1
@@ -156,9 +169,10 @@ class SampleBotAi(BotAi):
 
     def make_move(self, game_state: GameState) -> Action:
         self.agent = game_state.get_agent_of_player(self.my_id)
+        self.gameState = game_state
         try:
 
-            if self.getOccupyPercent(game_state) > 0.05:
+            if self.getOccupyPercent(game_state) > 0.125:
                 return self.harvesAI(game_state)
             else:
                 return self.suicideAI(game_state)
@@ -170,4 +184,4 @@ class SampleBotAi(BotAi):
             pass
 
         self.gameRound = self.gameRound + 1
-        return Actions.HOLD
+        return random.choices([Actions.PLANT_BOMB, Actions.RIGHT, Actions.DOWN]);
