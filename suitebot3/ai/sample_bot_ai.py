@@ -22,12 +22,12 @@ class SampleBotAi(BotAi):
 
     def normalizeCoord(self, point):
         if point.x < 0:
-            point.x = self.gameState.get_game_plan().width - point.x
+            point.x = self.gameState.get_game_plan().width + point.x
         else:
             point.x =  point.x % self.gameState.get_game_plan().width
 
         if point.y < 0:
-            point.y = self.gameState.get_game_plan().height - point.y
+            point.y = self.gameState.get_game_plan().height + point.y
         else:
             point.y = point.y % self.gameState.get_game_plan().height
 
