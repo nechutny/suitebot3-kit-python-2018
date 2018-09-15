@@ -1,5 +1,6 @@
 from typing import Dict, Iterator
 
+from suitebot3.game.game_constants import GameConstants
 from suitebot3.game.point import Point
 
 
@@ -29,3 +30,6 @@ class GamePlan:
         """ Iterate over all fields on the game plan """
         return (Point(i // self.height, i % self.height) for i in range(0, self.width * self.height))
 
+    @staticmethod
+    def get_initial_resources():
+        return GameConstants.FIELD_INITIAL_RESOURCES
