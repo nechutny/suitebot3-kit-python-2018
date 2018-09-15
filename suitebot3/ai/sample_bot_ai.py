@@ -118,6 +118,27 @@ class SampleBotAi(BotAi):
             self.gameRound = self.gameRound + 1
             return self.translateDirection(self.direction, 1)
         elif self.gameRound % 5 == 3:
+            # znovu zkontrolovat
+
+            myPosition = self.agent.get_position()
+
+            point = NamedTuple('Point', [('x', int), ('y', int)])
+
+            points_right = self.calculatePoints(game_state, myPosition.x + 2, myPosition.y)
+            point.x = myPosition.x + 1
+            point.y = myPosition.y + ( +1 if self.translateDirection(self.direction, 1) == Actions.UP else -1)
+            points_right = points_right - game_state.get_field(point).get_resource_count()
+
+            points_left = self.calculatePoints(game_state, myPosition.x - 2, myPosition.y)
+            point.x = myPosition.x - 1
+            point.y = myPosition.y + (+1 if self.translateDirection(self.direction, 1) == Actions.UP else -1)
+            points_left = points_left - game_state.get_field(point).get_resource_count()
+
+            if points_left < points_right:
+                self.direction = 1
+            else:
+                self.direction = 2
+
             self.gameRound = self.gameRound + 1
             return self.translateDirection(self.direction, 2)
         elif self.gameRound % 5 == 4:
