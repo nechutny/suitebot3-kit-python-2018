@@ -184,4 +184,4 @@ class SampleBotAi(BotAi):
             pass
 
         self.gameRound = self.gameRound + 1
-        return random.choices([Actions.PLANT_BOMB, Actions.RIGHT, Actions.DOWN]);
+        return random.choices([Actions.PLANT_BOMB, Actions.RIGHT, Actions.DOWN])
